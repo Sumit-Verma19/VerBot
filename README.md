@@ -1,4 +1,4 @@
-**VerBot: A Voice and Text-Interactive Chatbot**
+## **VerBot: A Voice and Text-Interactive Chatbot**
 
 VerBot is an advanced Python-based chatbot capable of handling both voice and text interactions, making it an accessible and versatile digital assistant. The project integrates Natural Language Processing (NLP), speech recognition, and SQL database management to deliver personalized responses based on user preferences and command history. Designed for convenience and flexibility, VerBot serves as a foundational framework for creating adaptable, real-time conversational AI applications.
 
@@ -79,24 +79,24 @@ Project Structure
 
 VerBot/
 │
-├── main.py                # Main executable for running VerBot
-├── requirements.txt       # Project dependencies
-├── README.md              # Project README file
+├── main.py                
+├── requirements.txt       
+├── README.md             
 ├── config/
-│   └── config.py          # Configuration and environment variables
+│   └── config.py         
 ├── database/
-│   └── init.sql           # SQL initialization scripts for database setup
+│   └── init.sql          
 ├── src/
 │   ├── nlp/
-│   │   ├── processor.py    # NLP processing scripts
+│   │   ├── processor.py    =
 │   ├── voice/
-│   │   ├── recognizer.py   # Voice recognition and processing scripts
+│   │   ├── recognizer.py   
 │   ├── db/
-│   │   └── database.py     # SQL database handling
+│   │   └── database.py    =
 │   └── bot/
-│       └── bot.py         # Core bot functionality and logic
+│       └── bot.py      
 └── tests/
-    └── test_cases.py      # Unit tests for various modules
+└── test_cases.py     
 
 Future Scope
 
