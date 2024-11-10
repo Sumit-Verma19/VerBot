@@ -75,28 +75,27 @@ Tech Stack
 	•	Asynchronous Processing: Python’s asyncio library for handling concurrent requests.
 	•	Text-to-Speech: pyttsx3 for audio feedback.
 
-Project Structure
+## Project Structure
 
 VerBot/
-│
-├── main.py                
-├── requirements.txt       
-├── README.md             
-├── config/
-│   └── config.py         
-├── database/
-│   └── init.sql          
-├── src/
-│   ├── nlp/
-│   │   ├── processor.py    =
-│   ├── voice/
-│   │   ├── recognizer.py   
-│   ├── db/
-│   │   └── database.py    =
-│   └── bot/
-│       └── bot.py      
-└── tests/
-└── test_cases.py     
+- main.py                # Main executable for running VerBot
+- requirements.txt       # Project dependencies
+- README.md              # Project README file
+- config/
+    - config.py          # Configuration and environment variables
+- database/
+    - init.sql           # SQL initialization scripts for database setup
+- src/
+    - nlp/
+        - processor.py    # NLP processing scripts
+    - voice/
+        - recognizer.py   # Voice recognition and processing scripts
+    - db/
+        - database.py     # SQL database handling
+    - bot/
+        - bot.py          # Core bot functionality and logic
+- tests/
+    - test_cases.py      # Unit tests for various modules    
 
 Future Scope
 
