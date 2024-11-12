@@ -15,15 +15,17 @@ import pymysql as sql
 import hashlib
 import random
 
+pygame.init()
 pygame.mixer.init()
 
 NEWS_API_KEY = '24d46fa8a64d4769a65b19b9b0eb1ee6'
 CRICKET_API_KEY = '87f3008e-3b53-434d-a94f-eba20d31a986'
+WEATHER_API_KEY = '5f59dbd5a67c464d29c2c6f5a1fe0ac7'
 
 recognizer = sr.Recognizer()
 plans = []
 
-con = sql.connect(host="localhost", user="root", password="root", database="PANDA_AI")
+con = sql.connect(host="localhost", user="root", password="Root@123", database="PANDA_AI")
 
 current_user_id = None
 root = tk.Tk()
@@ -70,7 +72,7 @@ def login_user(username, password):
 def open_registration_window():
     reg_window = tk.Toplevel(root)
     reg_window.title("Register")
-    reg_window.iconbitmap(r"C:\Tushar\Coding nd Stuff\Minor Project\Chatbot\account.ico")
+    reg_window.iconbitmap(r"/Users/sumitverma/H3RTZ/Python_nd_Stuff/Chatbot/account.ico")
 
     tk.Label(reg_window, text="Username:").grid(row=0, column=0)
     tk.Label(reg_window, text="Password:").grid(row=1, column=0)
@@ -91,7 +93,7 @@ def open_registration_window():
 def open_login_window():
     login_window = tk.Toplevel(root)
     login_window.title("Login")
-    login_window.iconbitmap(r"C:\Tushar\Coding nd Stuff\Minor Project\Chatbot\account.ico")
+    login_window.iconbitmap(r"/Users/sumitverma/H3RTZ/Python_nd_Stuff/Chatbot/account.ico")
 
     tk.Label(login_window, text="Username:").grid(row=0, column=0)
     tk.Label(login_window, text="Password:").grid(row=1, column=0)
@@ -216,6 +218,49 @@ def fetch_latest_news():
     except Exception as e:
         return "Sorry, I couldn't fetch the news right now."
 
+def fetch_weather(city):
+    try:
+        url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={WEATHER_API_KEY}&units=metric"
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            weather_data = response.json()
+            main = weather_data['weather'][0]['main']
+            description = weather_data['weather'][0]['description']
+            temp = weather_data['main']['temp']
+            feels_like = weather_data['main']['feels_like']
+            humidity = weather_data['main']['humidity']
+            
+            weather_output = (f"Weather in {city}:\n"
+                              f"Main: {main}\n"
+                              f"Description: {description}\n"
+                              f"Temperature: {temp}°C\n"
+                              f"Feels like: {feels_like}°C\n"
+                              f"Humidity: {humidity}%")
+            
+            say(weather_output)
+            return weather_output
+        
+        elif response.status_code == 404:
+            error_message = f"City '{city}' not found. Please check the city name."
+            return error_message
+        
+        elif response.status_code == 401:
+            error_message = "Invalid API Key. Please check your API key and try again."
+            return error_message
+        
+        else:
+            error_message = f"Failed to fetch weather data. Error code: {response.status_code}"
+            return error_message
+    
+    except requests.exceptions.ConnectionError:
+        error_message = "Network error. Please check your internet connection."
+        return error_message
+    
+    except Exception as e:
+        error_message = f"An unexpected error occurred: {str(e)}"
+        return error_message
+
 
 def fetch_cricket_score():
     try:
@@ -234,7 +279,6 @@ def fetch_cricket_score():
             return "Failed to fetch cricket scores."
     except Exception as e:
         return "Sorry, I couldn't fetch the cricket scores right now."
-
 
 stopwatch_running = False
 stopwatch_start_time = None
@@ -330,11 +374,10 @@ def on_start_speech():
         say(recognized_text)
         display_text.insert(tk.END, f"You said: {recognized_text}\n")
 
-        if "goodbye panda" in recognized_text.lower():
+        if "Goodbye" in recognized_text.lower():
             display_text.insert(tk.END, "Goodbye! Stopping the music and exiting...\n")
             pygame.mixer.music.stop()
             root.quit()
-
 
         if "kill yourself" in recognized_text.lower():
             display_text.insert(tk.END, "Goodbye! Stopping the music and exiting...\n")
@@ -345,12 +388,6 @@ def on_start_speech():
             display_text.insert(tk.END, "Goodbye! Stopping the music and exiting...\n")
             pygame.mixer.music.stop()
             root.quit()
-
-        if "mar ja" in recognized_text.lower():
-            display_text.insert(tk.END, "Goodbye! Stopping the music and exiting...\n")
-            pygame.mixer.music.stop()
-            root.quit()
-
 
         if "time" in recognized_text.lower():
             current_time = get_current_time()
@@ -365,10 +402,10 @@ def on_start_speech():
         if "cricket score" in recognized_text.lower():
             cricket_score = fetch_cricket_score()
             display_text.insert(tk.END, f"Cricket Score: {cricket_score}\n")
-            say("Here is the latest cricket score.")
+            say("Here is the latest cricket score.")    
 
         if "music" in recognized_text.lower():
-            music_path = r"C:\Tushar\Coding nd Stuff\Minor Project\Chatbot\art-of-samples-wild-helga-house-music-intro-245399.mp3"
+            music_path = r"/Users/sumitverma/H3RTZ/Python_nd_Stuff/Chatbot/art-of-samples-wild-helga-house-music-intro-245399.mp3"
             if os.path.exists(music_path):
                 say("Playing music now.")
                 pygame.mixer.music.load(music_path)
@@ -421,40 +458,45 @@ def on_start_speech():
 
         if "view plans" in recognized_text.lower():
             view_plans()
+        
+        if "weather" in recognized_text.lower():
+            city = "Delhi"  # or dynamically extract the city name if needed
+            whr = fetch_weather(city=city)
+            display_text.insert(tk.END, f"Weather Report: {whr}\n")
+            say("Here is the Weather Report.") 
 
     else:
         say("Sorry, I did not catch that.")
         display_text.insert(tk.END, "Sorry, could not understand you.\n")
 
 
-
-root.title("Panda AI")
+root.title("VerBot")
 root.attributes('-fullscreen', True)
 root.bind('<Escape>', toggle_fullscreen)
-root.iconbitmap(r"C:\Tushar\Coding nd Stuff\Minor Project\Chatbot\cute_panda.ico")
+root.iconbitmap(r"/Users/sumitverma/H3RTZ/Python_nd_Stuff/Chatbot/cute_panda.ico")
 
-bg_image = Image.open(r"C:\Tushar\Coding nd Stuff\Minor Project\Chatbot\bear.jpg")
+bg_image = Image.open(r"/Users/sumitverma/H3RTZ/Python_nd_Stuff/Chatbot/bear.png")
 bg_image = bg_image.resize((root.winfo_screenwidth(), root.winfo_screenheight()), Image.LANCZOS)
 bg_photo = ImageTk.PhotoImage(bg_image)
 
 bg_label = tk.Label(root, image=bg_photo)
 bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-display_text = scrolledtext.ScrolledText(root, height=10, width=55, bg='white', fg='black', font=('Arial', 14))
-display_text.pack(pady=10,padx=10,expand=True)
+display_text = scrolledtext.ScrolledText(root, height=15, width=64, bg='White', fg='black', font=('Calibri', 14), wrap='word', borderwidth=0, highlightthickness=0)
+display_text.pack(pady=0,padx=0,expand=True)
 
-project_info = tk.Label(root, text="Project created by Sumit Verma and Tushar Tawakley", fg='black', font=('Georgia', 15), padx=10,
-                        pady=10)
+project_info = tk.Label(root, text="Project created by Sumit Verma and Tushar Tawakley", font=('Bahnschrift', 20), padx=10,pady=10)
 project_info.pack(side=tk.BOTTOM, padx=10, pady=10)
 
 stopwatch_label = tk.Label(root, text=f"Elapsed time: 0.00 seconds", bg='lightblue', fg='black', font=('Arial', 14))
 stopwatch_label.pack(pady=10)
 stopwatch_label.pack_forget()
 
-control_frame = tk.Frame(root)
-control_frame.pack(pady=20)
+control_frame = tk.Frame(root, borderwidth=0, padx=0, pady=0)
+control_frame.pack(pady=0)
 
-icon_image = Image.open(r"C:\Tushar\Coding nd Stuff\Minor Project\Chatbot\sign-in.png")
+
+icon_image = Image.open(r"/Users/sumitverma/H3RTZ/Python_nd_Stuff/Chatbot/sign-in.png")
 icon_image = icon_image.resize((50, 50), Image.LANCZOS)
 icon = ImageTk.PhotoImage(icon_image)
 
@@ -463,7 +505,7 @@ main_button.place(x=10, y=10)
 
 dropdown_frame = Frame(root, bg='lightblue')
 
-about_icon_image = Image.open(r"C:\Tushar\Coding nd Stuff\Minor Project\Chatbot\about-us.ico")
+about_icon_image = Image.open(r"/Users/sumitverma/H3RTZ/Python_nd_Stuff/Chatbot/about-us.ico")
 about_icon_image = about_icon_image.resize((50, 50), Image.LANCZOS)
 about_icon = ImageTk.PhotoImage(about_icon_image)
 
@@ -482,21 +524,21 @@ login_button.pack(pady=5)
 login_button.bind("<Enter>", on_enter)
 login_button.bind("<Leave>", on_leave)
 
-start_icon_image = Image.open(r"C:\Tushar\Coding nd Stuff\Minor Project\Chatbot\mic.ico")
-start_icon_image = start_icon_image.resize((40, 40), Image.LANCZOS)
+start_icon_image = Image.open(r"/Users/sumitverma/H3RTZ/Python_nd_Stuff/Chatbot/mic.ico")
+start_icon_image = start_icon_image.resize((50, 50), Image.LANCZOS)
 start_icon = ImageTk.PhotoImage(start_icon_image)
 
 start_button = tk.Button(control_frame, image=start_icon, command=on_start_speech, borderwidth=0)
 start_button.grid(row=0, column=0, padx=10)
 
-stop_icon_image = Image.open(r"C:\Tushar\Coding nd Stuff\Minor Project\Chatbot\slash.ico")
+stop_icon_image = Image.open(r"/Users/sumitverma/H3RTZ/Python_nd_Stuff/Chatbot/slash.ico")
 stop_icon_image = stop_icon_image.resize((50, 50), Image.LANCZOS)
 stop_icon = ImageTk.PhotoImage(stop_icon_image)
 
 stop_music_button = tk.Button(control_frame, image=stop_icon, command=stop_music, borderwidth=0)
 stop_music_button.grid(row=0, column=1, padx=10)
 
-exit_icon_image = Image.open(r"C:\Tushar\Coding nd Stuff\Minor Project\Chatbot\exit-to-app-button.ico")
+exit_icon_image = Image.open(r"/Users/sumitverma/H3RTZ/Python_nd_Stuff/Chatbot/exit-to-app-button.ico")
 exit_icon_image = exit_icon_image.resize((50, 50), Image.LANCZOS)
 exit_icon = ImageTk.PhotoImage(exit_icon_image)
 
